@@ -85,13 +85,13 @@ turtle.goto(75,50)
 turtle.pendown()
 turtle.goto(40,50)
 
-horizontal_walls = [(range(-200,200), range(-5, 15)),range(-110, -90) , (range(-200,-170),range(-10, 10)) ,
-                    (range(-160,-120), range(40, 60)) , (range(-160,-40), range(-60, 40)) , (range(-75, -40), range(40, 60)) ,
-                     (range(-35, 35), range(-10, 10)) , (range(170,200),range(-10, 10)) , (range(120, 160), range(40, 60)) ,
-                     (range(40, 160), range(-60, -40)) , (range(40, 75), range(40, 60))]
-vertical_walls = [(range(190, 210), range(-100, 100)) , (range(-210, -190), range(-100, 100)) , (range(-130, -150), range(-10, 50)) ,
-                  (range(-80, -60), range(-50, 5)) , (range(-10, 10), range(50, 100)) , (range(-10, 10), range(-50, 0, 5)) , (range(110, 130), range(-10, 50)) ,
-                   (range(60, 80), range(-50, 5))]
+horizontal_walls = [(range(-200,200, 5),-100) ,(range(-200,200, 5),100) , (range(-200,-170),0) ,
+                    (range(-160,-120), 50) , (range(-160,-40), -50) , (range(-75, -40), 50) ,
+                     (range(-35, 35), 0) , (range(170,200),0) , (range(120, 160), 50) ,
+                     (range(40, 160), -50) , (range(40, 75), 50)]
+vertical_walls = [(200, range(-100, 100)) , (-200, range(-100, 100)) , (-120, range(-10, 50)) ,
+                  (-70, range(-50, 5)) , (0, range(50, 100)) , (0, range(-50, 0, 5)) , (120, range(-10, 50)) ,
+                   (70, range(-50, 5))]
 
 all_walls = horizontal_walls + vertical_walls
 turtle.penup()
@@ -151,21 +151,21 @@ turtle.onkeypress(right,RIGHT_ARROW)
 turtle.onkeypress(left,LEFT_ARROW)
 
 
-def check_overlap_horizontal():
-    pac_man_x = pac_man.pos()[0]
-    pac_man_y = pac_man.pos()[1]
+def check_overlap_horizontal(x,y):
+    #pac_man_x = pac_man.pos()[0]
+    #pac_man_y = pac_man.pos()[1]
     for horizontal_wall in horizontal_walls:
-        if pac_man_y == horizontal_wall[1]:#y coords are the same
-            if pac_man_x in horizontal_wall[0]:#x in the range of the wall
+        if y == horizontal_wall[1]:#y coords are the same
+            if x in horizontal_wall[0]:#x in the range of the wall
                 return True
     return False
 
-def check_overlap_vertical():
-    pac_man_x = pac_man.pos()[0]
-    pac_man_y = pac_man.pos()[1]
+def check_overlap_vertical(x,y):
+    #pac_man_x = pac_man.pos()[0]
+    #pac_man_y = pac_man.pos()[1]
     for vertical_wall in vertical_walls:
-        if pac_man_x == vertical_wall[0]: #x coords are the same
-            if pac_man_y in vertical_wall[1]: #y in the range of the wall
+        if x == vertical_wall[0]: #x coords are the same
+            if y in vertical_wall[1]: #y in the range of the wall
                 return True
     return False
 
@@ -186,24 +186,46 @@ def move_pac_man():
     my_pos = pac_man.pos()
     x_pos = my_pos[0]
     y_pos = my_pos[1]
-    if direction==RIGHT :
-        pac_man.goto(x_pos + SQUARE_SIZE, y_pos)
-        print("You moved right!")
+    #if direction==RIGHT and not check_overlap_vertical() :
+    if direction==RIGHT: 
+        #pac_man.goto(x_pos + SQUARE_SIZE, y_pos)
+        #print("You moved right!")
+        new_x = x_pos + SQUARE_SIZE
+        new_y = y_pos
+    #elif direction==LEFT and not check_overlap_vertical():
     elif direction==LEFT:
-        pac_man.goto(x_pos - SQUARE_SIZE, y_pos)
-        print("You moved left!")
+        #pac_man.goto(x_pos - SQUARE_SIZE, y_pos)
+        #print("You moved left!")
+        new_x = x_pos - SQUARE_SIZE
+        new_y = y_pos
+    #elif direction==UP and not check_overlap_horizontal():
     elif direction==UP:
-        pac_man.goto(x_pos,y_pos + SQUARE_SIZE)
-        print("You moved up!")
+        #pac_man.goto(x_pos,y_pos + SQUARE_SIZE)
+        #print("You moved up!")
+        new_x = x_pos
+        new_y = y_pos + SQUARE_SIZE
+        
+    #elif direction==DOWN and not check_overlap_horizontal():
     elif direction==DOWN:
-        pac_man.goto(x_pos,y_pos - SQUARE_SIZE)
-        print("You moved down!")
+        #pac_man.goto(x_pos,y_pos - SQUARE_SIZE)
+        #print("You moved down!")
+        new_x = x_pos
+        new_y = y_pos - SQUARE_SIZE
+    else:
+        new_x = x_pos
+        new_y = y_pos
 
+    if not check_overlap_vertical(new_x,new_y) and not check_overlap_horizontal(new_x,new_y):
+        pac_man.goto(new_x,new_y)
+    
 
-    print('hitting wall: ' + str(check_overlap_horizontal()))
-    print('hitting wall: ' + str(check_overlap_vertical()))
+    #check if about to hit wall
+    #move the pacman
+    
 
-  
+    #print('hitting wall: ' + str(check_overlap_horizontal()))
+    #print('hitting wall: ' + str(check_overlap_vertical()))
+
     print(pac_man.pos() in all_walls)
     print(pac_man.pos())
     turtle.ontimer(move_pac_man,TIME_STEP)
@@ -212,6 +234,11 @@ move_pac_man()
     
 
 turtle.mainloop()
+
+'''changed the if statements and the checking functions, so the pac-man will be
+able to move away from the walls, by making the new if statements look at the
+coordinates that are infront of the pac-man, and else by making the functions
+take arguments'''
 
 
 
